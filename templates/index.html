@@ -1,19 +1,33 @@
 <head>
     <title>{{ title }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
 
 <body>
     <div class="App">
         <header class="App-header">
-            <img src="{{ url_for('static', filename='Octocat.png') }}" class="App-logo" alt="logo" />
             <p>
-                GitHub Codespaces <span class="heart">♥️</span> Flask
+                <span class="star">⭐</span> Signal Recognition System <span class="star">⭐</span>
             </p>
             <p class="small">
                 Edit <code>templates/index.html</code> and refresh to see your changes!
             </p>
         </header>
     </div>
+
+    <div class="App">
+        <header class="App-main">
+        </header>
+
+        <div class="upload-buttons">
+            <header class="App-main">
+                <script src="{{ url_for('static', filename='upload.js') }}"></script>
+            </header>
+            <input type="file" id="file-input">
+            <button id="upload-button">Upload</button>
+        </div>
+    </div>
+
 </body>
 
 </html>
