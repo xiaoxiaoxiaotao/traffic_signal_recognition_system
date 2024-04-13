@@ -22,22 +22,38 @@ code {
 }
 
 .App-header {
-    background-color: #282c34;
-    min-height: 100vh;
+    position: static;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #0dc4e4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(16px + 2vmin);
+    color: white;
+}
+
+.App-main {
+    position: static;
+    left: 0;
+    width: 100%;
+    background-color: #0cc3b0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     font-size: calc(10px + 2vmin);
-    color: white;
+    color: black;
 }
 
 .App-link {
     color: #61dafb;
 }
 
-.heart {
-    color: #ff0000;
+.star {
+    color: #f2ff00;
 }
 
 .small {
