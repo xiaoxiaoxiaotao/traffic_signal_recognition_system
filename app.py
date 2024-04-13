@@ -30,11 +30,11 @@ def upload_file():
         # filename = secure_filename(file.filename)
         # file.save(os.path.join('uploads', filename))
         # TODO: predict the image
-        return 'File uploaded successfully', 200
+        return json.dumps({"msg":"File uploaded successfully", "code": 10}), 200
 
 
 
-@app.route("/pic_predict/pass_info", methods=["POST"])
+@app.route("/upload/pass_info", methods=["POST"])
 def before_predict():
     data = request.form
     print(data)

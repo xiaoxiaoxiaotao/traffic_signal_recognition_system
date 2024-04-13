@@ -44,6 +44,8 @@ function uploadPicture() {
     let xhr = new XMLHttpRequest();
     xhr.open('POST', '/upload', true);
     xhr.onload = function() {
+        let response = JSON.parse(xhr.responseText);
+        console.log(response.code);
         if (xhr.status === 200) {
             alert('上传成功!');
         } else {
