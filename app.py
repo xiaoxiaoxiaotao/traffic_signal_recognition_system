@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request
 import json
 import time
+from werkzeug.utils import secure_filename
+import os
+
 
 app = Flask(__name__)
 user_request = {}
@@ -12,20 +15,23 @@ FAIL = -1
 
 @app.route("/")
 def root():
-    return render_template("index.html", title="Hello")
+    return render_template("index.html", title="Home")
 
 
 # 表单POST提交图片（暂定），name="pic"，返回待定
-@app.route("/pic_predict", methods=["GET", "POST"])
-def predict():
-    if request.method == "POST":
-        file = request.files["pic"]
-        print("file", file)
-        # TODO：服务端后续收到图片后，校验特征值并匹配rid
-        # TODO: predict
-        return 'OK'
-    else:
-        return render_template("pic_predict.html")
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'picture' not in request.files:
+        return 'No file part', 400
+    file = request.files['picture']
+    if file.filename == '':
+        return 'No selected file', 400
+    if file:
+        # filename = secure_filename(file.filename)
+        # file.save(os.path.join('uploads', filename))
+        # TODO: predict the image
+        return 'File uploaded successfully', 200
+
 
 
 @app.route("/pic_predict/pass_info", methods=["POST"])
