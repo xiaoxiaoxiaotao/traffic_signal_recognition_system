@@ -17,14 +17,17 @@
 
     <div class="App">
         <header class="App-main">
+            <script type="text/javascript" src="../static/upload.js"></script>
         </header>
+        
+        <div>
+            <p class="upload-buttons">
+                <input type="file" id="file-input">
+                <img id="uploaded-image" src="" alt="Uploaded Image">
+                <button onclick="uploadPicture()" type="button" id="upload">Upload</button>
+            </p>
+            <p id="info"></p>
 
-        <div class="upload-buttons">
-            <header class="App-main">
-                <script src="{{ url_for('static', filename='upload.js') }}"></script>
-            </header>
-            <input type="file" id="file-input">
-            <button id="upload-button">Upload</button>
         </div>
     </div>
 
