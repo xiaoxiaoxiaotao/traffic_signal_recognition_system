@@ -15,12 +15,14 @@ window.onload = function() {
         if (size >= 1 * 1024 * 1024) {
             alert('文件大小超出限制');
             info.innerHTML = '文件大小超出限制';
+            preview.style.backgroundImage = '';
             return false;
         }
         // 获取File信息:
         info.innerHTML = `文件名称:  + ${file.name}<br>文件大小: ${file.size} <br>上传时间: ${file.lastModifiedDate}`;
         if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) {
             alert('不是有效的图片文件!');
+            preview.style.backgroundImage = '';
             return;
         }
         // 读取文件:
