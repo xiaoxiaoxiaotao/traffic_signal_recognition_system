@@ -41,17 +41,21 @@ window.onload = function() {
 function uploadPicture() {
     let fileInput = document.getElementById('file-input');
     let file = fileInput.files[0];
+    let rid = document.getElementById('rid_temp').value;
+
     let formData = new FormData();
     formData.append('picture', file);
+    formData.append('rid', rid);
+
     let xhr = new XMLHttpRequest();
     xhr.open('POST', '/upload', true);
     xhr.onload = function() {
         let response = JSON.parse(xhr.responseText);
         console.log(response.code);
         if (xhr.status === 200) {
-            alert('上传成功!');
+            alert('上传成功！\n服务端给出结果是：' + response.result);
         } else {
-            alert('上传失败!');
+            alert('上传失败！\n服务端答道：' + response.msg);
         }
     };
     xhr.send(formData);

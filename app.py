@@ -19,24 +19,35 @@ def root():
     return render_template("index.html", title="Home")
 
 
-# 表单POST提交图片（暂定），name="pic"，返回待定
+# 表单POST提交图片
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'picture' not in request.files:
-        return 'No file part', 400
+        result_json = json.dumps({"msg": "No file part", "code": 20, "result": "FAIL"})
+        return result_json, 400
     file = request.files['picture']
     if file.filename == '':
-        return 'No selected file', 400
+        result_json = json.dumps({"msg": "No selected file", "code": 20, "result": "FAIL"})
+        return result_json, 400
     if file:
-        # filename = secure_filename(file.filename)
-        # file.save(os.path.join('uploads', filename))
-        # TODO: predict the image, and give results
-        result_json = json.dumps({"msg": "File uploaded successfully", "code": 10, "results": "OK"})
-        # TODO: user_request.update()
-        return result_json, 200
+        if "rid" not in request.form or request.form["rid"] == "":
+            result_json = json.dumps({"msg": "No rid", "code": 20, "result": "FAIL"})
+            return result_json, 400
+        else:
+            request_id = request.form["rid"]
+            # TODO: UID
+            user_request.update(
+                {request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
+            # filename = secure_filename(file.filename)
+            # file.save(os.path.join('uploads', filename))
+            # TODO: predict the image, and give results
+
+            print(user_request)
+            result_json = json.dumps({"msg": "File uploaded successfully", "rid": request_id, "code": 10, "result": "AAAAAA"})
+            return result_json, 200
 
 
-@app.route("/upload/pass_info", methods=["POST"])
+'''@app.route("/upload/pass_info", methods=["POST"])
 def before_predict():
     data = request.form
     # TODO: user more secure GET method
@@ -48,7 +59,7 @@ def before_predict():
     user_request.update({request_id: {"user": user_id, "statu": REQUESTED, "time": time.time(), "pic": image, "result": None}})
     print(user_request)
     result_json = json.dumps({"code": 10, "data": {"uid": user_id, "rid": request_id}})
-    return result_json, 200
+    return result_json, 200'''
 
 
 if __name__ == "__main__":
