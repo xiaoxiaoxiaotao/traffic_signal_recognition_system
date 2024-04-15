@@ -47,20 +47,5 @@ def upload_file():
             return result_json, 200
 
 
-'''@app.route("/upload/pass_info", methods=["POST"])
-def before_predict():
-    data = request.form
-    # TODO: user more secure GET method
-    # TODO: merge the 2 upload method
-    print(data)
-    user_id = data["uid"]
-    request_id = data["rid"]  # rid用户生成，采用图片hash
-    image = data["pic"]
-    user_request.update({request_id: {"user": user_id, "statu": REQUESTED, "time": time.time(), "pic": image, "result": None}})
-    print(user_request)
-    result_json = json.dumps({"code": 10, "data": {"uid": user_id, "rid": request_id}})
-    return result_json, 200'''
-
-
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8000)
