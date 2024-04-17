@@ -3,6 +3,7 @@ import json
 import time
 from werkzeug.utils import secure_filename
 import os
+import gtsrb.testgtsrb
 
 
 app = Flask(__name__)
@@ -38,10 +39,10 @@ def upload_file():
             # TODO: UID
             user_request.update(
                 {request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
-            # filename = secure_filename(file.filename)
-            print(os.path.join('uploads'))
-            # file.save(os.path.join('uploads', filename))
+            filename = request_id + "_" + secure_filename(file.filename)
+            file.save(os.path.join('uploads', filename))  # file.save("./uploads/" + filename)
             # TODO: predict the image, and give results
+
 
             print(user_request)
             result_json = json.dumps({"msg": "File uploaded successfully", "rid": request_id, "code": 10, "result": "AAAAAA"})

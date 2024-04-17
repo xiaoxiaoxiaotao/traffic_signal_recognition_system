@@ -92,7 +92,7 @@ class Lzr(nn.Module):
         return self.model(x)
 
 
-model = torch.load("gtsrb_1906.pth")
+model = torch.load("trained_modules/gtsrb_1906.pth")
 print(model)
 image = torch.reshape(image, (1, 3, 32, 32))
 model.eval()
