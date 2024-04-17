@@ -3,7 +3,8 @@ import json
 import time
 from werkzeug.utils import secure_filename
 import os
-import gtsrb.testgtsrb
+
+from gtsrb.predict import *
 
 
 app = Flask(__name__)
@@ -41,11 +42,13 @@ def upload_file():
                 {request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
             filename = request_id + "_" + secure_filename(file.filename)
             file.save(os.path.join('uploads', filename))  # file.save("./uploads/" + filename)
-            # TODO: predict the image, and give results
-
-
-            print(user_request)
-            result_json = json.dumps({"msg": "File uploaded successfully", "rid": request_id, "code": 10, "result": "AAAAAA"})
+            predict_result = predict_from_file(os.path.join('uploads', filename),
+                                               os.path.join("gtsrb/trained_modules", "gtsrb_1906.pth"))
+            print(user_request, predict_result)
+            result_json = json.dumps({"msg": "File uploaded successfully",
+                                      "rid": request_id,
+                                      "code": 10,
+                                      "result": predict_result})
             return result_json, 200
 
 

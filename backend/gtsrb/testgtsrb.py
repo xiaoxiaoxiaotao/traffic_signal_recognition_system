@@ -54,7 +54,7 @@ traffic_signs = [
     "End of no passing by vehicles over 3.5 metric tons"
 ]
 
-image_path = "./imgs/OIP.jpg"
+image_path = "./test_imgs/OIP.jpg"
 image = Image.open(image_path)
 print(image)
 
