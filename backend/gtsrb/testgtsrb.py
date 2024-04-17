@@ -54,34 +54,33 @@ traffic_signs = [
     "End of no passing by vehicles over 3.5 metric tons"
 ]
 
-
 image_path = "./imgs/OIP.jpg"
-image= Image.open(image_path)
+image = Image.open(image_path)
 print(image)
 
-Transform = torchvision.transforms.Compose([torchvision.transforms.Resize((32,32)),torchvision.transforms.ToTensor()])
+Transform = torchvision.transforms.Compose([torchvision.transforms.Resize((32, 32)), torchvision.transforms.ToTensor()])
 
-image= Transform(image)
+image = Transform(image)
 
 print(image.shape)
 
 
 class Lzr(nn.Module):
     def __init__(self):
-        super(Lzr,self).__init__()
+        super(Lzr, self).__init__()
         self.model = nn.Sequential(
-            nn.Conv2d(3,16,5,padding=2),
+            nn.Conv2d(3, 16, 5, padding=2),
             nn.BatchNorm2d(16),
             nn.ReLU(),
-            nn.MaxPool2d(2,2),
+            nn.MaxPool2d(2, 2),
 
-            nn.Conv2d(16,32,5,padding=2),
+            nn.Conv2d(16, 32, 5, padding=2),
             nn.BatchNorm2d(32),
             nn.ReLU(),
-            nn.MaxPool2d(2,2),
+            nn.MaxPool2d(2, 2),
             nn.Flatten(),
 
-            nn.Linear(32 * 8 *8, 120),
+            nn.Linear(32 * 8 * 8, 120),
             nn.ReLU(),
             nn.Dropout(0.5),
             nn.Linear(120, 84),
@@ -89,13 +88,13 @@ class Lzr(nn.Module):
             nn.Linear(84, 43)
         )
 
-    def forward(self,x):
-
+    def forward(self, x):
         return self.model(x)
+
 
 model = torch.load("gtsrb_1906.pth")
 print(model)
-image = torch.reshape(image,(1,3,32,32))
+image = torch.reshape(image, (1, 3, 32, 32))
 model.eval()
 with torch.no_grad():
     output = model(image)

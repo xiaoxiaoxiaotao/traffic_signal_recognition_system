@@ -39,6 +39,7 @@ def upload_file():
             user_request.update(
                 {request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
             # filename = secure_filename(file.filename)
+            print(os.path.join('uploads'))
             # file.save(os.path.join('uploads', filename))
             # TODO: predict the image, and give results
 
