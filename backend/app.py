@@ -37,6 +37,8 @@ def upload_file():
             return result_json, 400
         else:
             request_id = request.form["rid"]
+            # TODO: Let user_request update with the filename rather than the file object.
+            # TODO: No same rid
             # TODO: UID
             user_request.update(
                 {request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
