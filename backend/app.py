@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 import json
-import time
 from werkzeug.utils import secure_filename
+import time
 import os
+import random
 
 from gtsrb.predict import *
 
@@ -52,6 +53,19 @@ def upload_file():
                                       "code": 10,
                                       "result": predict_result})
             return result_json, 200
+
+
+# 获得一张测试图片（临时）
+@app.route('/test_img')
+def random_image():
+    # 获取图片文件列表
+    img_dir = "gtsrb/test_imgs"
+    img_list = os.listdir(img_dir)
+    # 随机选择一张图片
+    img_name = random.choice(img_list)
+    # 返回图片的完整路径
+    # img_path = os.path.join(img_dir, img_name)
+    return send_from_directory(img_dir, img_name)
 
 
 if __name__ == "__main__":
