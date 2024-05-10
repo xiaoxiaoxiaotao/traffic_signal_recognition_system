@@ -16,6 +16,7 @@ window.onload = function() {
             alert('文件大小超出限制');
             info.innerHTML = '文件大小超出限制';
             preview.style.backgroundImage = '';
+            fileInput.value = null; // 清除选中的文件
             return false;
         }
         // 获取File信息:
@@ -23,6 +24,7 @@ window.onload = function() {
         if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) {
             alert('不是有效的图片文件!');
             preview.style.backgroundImage = '';
+            fileInput.value = null; // 清除选中的文件
             return;
         }
         // 读取文件:
