@@ -1,6 +1,4 @@
 from PIL import Image
-#from gtsrb import *
-from gtsrb import *
 import torchvision
 import torch
 

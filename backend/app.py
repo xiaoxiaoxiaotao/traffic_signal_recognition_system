@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, send_from_directory
 import json
 from werkzeug.utils import secure_filename
+
 import time
 import os
 import random
 
-# from gtsrb.gtsrb import *
+from gtsrb.gtsrb import *
 from gtsrb.predict import *
 
 
@@ -46,7 +47,7 @@ def upload_file():
                 {request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
             filename = request_id + "_" + secure_filename(file.filename)
             file.save(os.path.join('uploads', filename))  # file.save("./uploads/" + filename)
-            predict(filename, request_id)
+            result_json = predict(filename, request_id)
             return result_json, 200
 
 
@@ -58,6 +59,7 @@ def predict(filename, request_id):
                                 "rid": request_id,
                                 "code": 10,
                                 "result": predict_result})
+    return result_json
 
 
 # 获得一张测试图片（临时）
