@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="generator" content="PSPad editor, www.pspad.com">
+        <title></title>
+    </head>
+    <body>
+
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="snap">Snap Photo</button>
+    <button id="save">Save Photo</button>
+    <button id="open_camera">Open Camera</button>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <input type="button" onclick="clearInterval(timer)" value="stop">
+
+    <script type="text/javascript">
+        //Control Camera
+
+        // Grab elements, create settings, etc.
+        var video = document.getElementById('video')
+        var start = document.getElementById('open_camera')
+        var timer;
+        // Elements for taking the snapshot
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        start.addEventListener("click", function () {
+            LoadCam()
+
+        })
+
+        function LoadCam() {
+            // Get access to the camera!
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            // Not adding `{ audio: true }` since we only want video now
+                navigator.mediaDevices.getUserMedia({video: true}).then(function (stream) {
+                    //video.src = window.URL.createObjectURL(stream);
+                    video.srcObject = stream;
+                    video.play();
+                    timer = setInterval(function()
+                    {
+                        context.drawImage(video, 0, 0, 640, 480)
+                        sendCanvasToServer()
+                    },500)
+                });
+            }
+        }
+
+        // Function to convert canvas content to base64 and send it to port 8000
+        function sendCanvasToServer() {
+            var imageData = canvas.toDataURL('image/jpeg'); // Convert canvas content to base64
+            var image = new Image();
+            image.src = imageData;
+            image.onload = function () {
+                //Send data
+                var canvasData = {
+                    imageData: imageData
+                };
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'http://localhost:8000', true); // Change URL to your server endpoint
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify(canvasData));
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                         console.log('Canvas data sent successfully.');
+                    }
+                    else {
+                         console.error('Failed to send canvas data.');
+                    }
+               };
+            };
+        }
+
+        function saveAsLocalImage() {
+            var myCanvas = document.getElementById("canvas");
+            // here is the most important part because if you dont replace you will get a DOM 18 exception.
+            // var image = myCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream;Content-Disposition: attachment;filename=foobar.png");
+            var image = myCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+            // window.location.href = image; // it will save locally
+            // create temporary link
+            var tmpLink = document.createElement('a');
+            tmpLink.download = 'image.png'; // set the name of the download file
+            tmpLink.href = image;
+
+            // temporarily add link to body and initiate the download
+            document.body.appendChild(tmpLink);
+            tmpLink.click();
+            document.body.removeChild(tmpLink);
+        }
+
+        // Trigger photo take
+        document.getElementById("snap").addEventListener("click", function () {
+            context.drawImage(video, 0, 0, 640, 480);
+        });
+
+        // Trigger photo save
+        document.getElementById("save").addEventListener("click", function () {
+            saveAsLocalImage();
+        });
+    </script>
+</body>
+</html>
