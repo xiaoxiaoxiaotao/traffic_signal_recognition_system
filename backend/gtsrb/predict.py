@@ -1,6 +1,6 @@
 from PIL import Image
-from backend.gtsrb.gtsrb import *
-import os
+import torchvision
+import torch
 
 traffic_signs = [
     "Speed limit (20km/h)",
@@ -51,14 +51,20 @@ traffic_signs = [
 
 def predict_from_file(img_path: str, module_filename: str) -> str:
     image = Image.open(img_path)
-    transform = torchvision.transforms.Compose([torchvision.transforms.Resize((32, 32)),
-                                               torchvision.transforms.ToTensor()])
+    transform = torchvision.transforms.Compose(
+        [torchvision.transforms.Resize((32, 32)),
+         torchvision.transforms.ToTensor()
+    ])
+
+    # transform the image
     image = transform(image)
+    # image = image.unsqueeze(0)  # Add a batch dimension
+    image = torch.reshape(image, (1, 3, 32, 32))
 
     # 加载模型文件
-    #  = torch.load("trained_modules/gtsrb_1906.pth")
     model = torch.load(module_filename)
-    image = torch.reshape(image, (1, 3, 32, 32))
+
+    #关闭Dropout和BatchNorm等特性
     model.eval()
 
     # 预测
