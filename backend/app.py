@@ -75,6 +75,15 @@ def random_image():
     # img_path = os.path.join(img_dir, img_name)
     return send_from_directory(img_dir, img_name)
 
+# 测试
+@app.route('/api/data')
+def test_return():
+    return json.dumps({"msg": "File uploaded successfully",
+                                "rid": 2,
+                                "code": 10,
+                                "result": 1})
+
+
 
 if __name__ == "__main__":
     '''
