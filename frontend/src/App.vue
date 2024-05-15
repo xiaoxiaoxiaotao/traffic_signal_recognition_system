@@ -1,8 +1,8 @@
 <template>
   <div>
-  <h1 class="gradient-text">Traffic Sign Recognition</h1>
-  <link href="https://fonts.googleapis.com/css?family=Archivo+Black&display=swap" rel="stylesheet">
-  
+    <h1 class="gradient-text">Traffic Sign Recognition</h1>
+    <link href="https://fonts.googleapis.com/css?family=Archivo+Black&display=swap" rel="stylesheet">
+
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="About The Team" name="first">
         <p>
@@ -35,56 +35,53 @@
     </el-tabs>
     <hr>
 
-
     <el-radio-group v-model="tabPosition" style="margin-bottom: 30px;">
     </el-radio-group>
     <el-tabs :tab-position="tabPosition" style="height: 600px;">
       <el-tab-pane label="Photo upload">
         <el-upload
-      class="upload-demo"
-      action="https://jsonplaceholder.typicode.com/posts/"
-      :on-preview="handlePreview"
-      :on-remove="handleRemove"
-      :file-list="fileList"
-      :before-upload="beforeAvatarUpload"
-      list-type="picture"
-    >
-      <el-button slot="trigger" size="large" type="primary">Please click here to pick the picture.</el-button>
-      <el-button style="margin-left: 10px;" size="large" type="success" @click="submitUpload">Upload</el-button>
-      <label for="rid_temp">rid</label>
-      <input type="text" id="rid_temp"/>
-      <div slot="tip" class="el-upload__tip">only the jpg files，no more than 2MB</div>
-    </el-upload>
-    <p id="info"></p>
-  <!-- 缩略图区域 -->
-    <div class="thumbnails">
-      <h3>Thumbnails</h3>
-      <div v-for="file in fileList" :key="file.name" class="thumbnail">
-        <img :src="file.thumbnailSrc" alt="Thumbnail" v-if="file.thumbnailSrc">
-      </div>
-    </div>
+          class="upload-demo"
+          action="https://jsonplaceholder.typicode.com/posts/"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :file-list="fileList"
+          :before-upload="beforeAvatarUpload"
+          list-type="picture"
+        >
+          <el-button slot="trigger" size="large" type="primary">Please click here to pick the picture.</el-button>
+          <el-button style="margin-left: 10px;" size="large" type="success" @click="submitUpload">Upload</el-button>
+          <label for="rid_temp">rid</label>
+          <input type="text" id="rid_temp" v-model="rid" />
+          <div slot="tip" class="el-upload__tip">only the jpg files，no more than 2MB</div>
+        </el-upload>
+        <p id="info"></p>
+        <!-- 缩略图区域 -->
+        <div class="thumbnails">
+          <h3>Thumbnails</h3>
+          <div v-for="file in fileList" :key="file.name" class="thumbnail">
+            <img :src="file.thumbnailSrc" alt="Thumbnail" v-if="file.thumbnailSrc">
+          </div>
+        </div>
       </el-tab-pane>
 
-      
       <el-tab-pane label="Camarea">
-      <div id="camarea">
-      <video ref="video" width="320" height="240" autoplay></video>
-      <div>
-      <el-button @click="snapPhoto">Snap Photo</el-button>
-      <el-button @click="savePhoto">Save Photo</el-button>
-      <el-button @click="openCamera">Open Camera</el-button>
-      </div>
-      <!--第二个屏幕-->
-      <canvas ref="canvas" width="320" height="240"></canvas>
-      <div>
-      <el-button @click="stopCamera" value="Stop">Stop</el-button>
-      </div>
-      
-      <!--原按钮，更改统一样式后不确定是否会导致功能变化
-      <input type="button" @click="stopCamera" value="Stop">
-      -->
-
-      </div>
+        <div id="camarea">
+          <video ref="video" width="320" height="240" autoplay></video>
+          <div>
+            <!--先省略了两个button，已实现了opencamarea后自动截取和上传
+            <el-button @click="snapPhoto">Snap Photo</el-button>
+            <el-button @click="savePhoto">Save Photo</el-button>
+            -->
+            <el-button @click="openCamera">Open Camera</el-button>
+          </div>
+          <!--隐藏的第二个屏幕
+          <canvas ref="canvas" width="320" height="240"></canvas>
+          -->
+          <canvas ref="canvas" :class="{ hidden: !isCanvasVisible }" width="320" height="240"></canvas>
+          <div>
+            <el-button @click="stopCamera" value="Stop">Stop</el-button>
+          </div>
+        </div>
       </el-tab-pane>
     </el-tabs>
 
@@ -98,7 +95,8 @@ export default {
       activeName: 'first',
       fileList: [],
       timer: null,
-      tabPosition: 'left'
+      tabPosition: 'left',
+      rid: ''
     };
   },
   methods: {
@@ -125,7 +123,7 @@ export default {
       }
       if (isJPG && isLt2M) {
         this.createThumbnail(file);
-      } 
+      }
       return isJPG && isLt2M;
     },
     createThumbnail(file) {
@@ -160,13 +158,11 @@ export default {
       };
       reader.readAsDataURL(file);
     },
-    uploadPicture() {
-      const fileInput = document.getElementById('file-input');
-      const file = fileInput.files[0];
-      const rid = document.getElementById('rid_temp').value;
+    uploadPicture(imageBlob) {
+      const rid = this.rid;
 
       const formData = new FormData();
-      formData.append('picture', file);
+      formData.append('picture', imageBlob, 'photo.jpg');
       formData.append('rid', rid);
 
       const xhr = new XMLHttpRequest();
@@ -175,162 +171,81 @@ export default {
         const response = JSON.parse(xhr.responseText);
         console.log(response.code);
         if (xhr.status === 200) {
-          alert('上传成功！\n服务端给出结果是：' + response.result);
+          alert('上传成功！\n服务端给出的响应：' + response.message);
         } else {
-          alert('上传失败！\n服务端答道：' + response.msg);
+          alert('上传失败：' + xhr.responseText);
         }
       };
       xhr.send(formData);
     },
-  
-  
-
-
-    submitUpload() {
-      this.$refs.upload.submit();
-    },
-    openCamera() {
-      this.loadCamera();
-    },
-    loadCamera() {
-      const video = this.$refs.video;
-      const canvas = this.$refs.canvas;
-      const context = canvas.getContext('2d');
-
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-          video.srcObject = stream;
-          video.play();
-          this.timer = setInterval(() => {
-            context.drawImage(video, 0, 0, 320, 240);
-            this.sendCanvasToServer();
-          }, 500);
-        }).catch((error) => {
-          console.error('Error accessing camera:', error);
-        });
-      }
-    },
-    sendCanvasToServer() {
-      const canvas = this.$refs.canvas;
-      const imageData = canvas.toDataURL('image/jpeg');
-
-      const canvasData = {
-        imageData: imageData
-      };
-
-      fetch('http://localhost:8000', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(canvasData)
-      })
-        .then((response) => {
-          if (response.ok) {
-            console.log('Canvas data sent successfully.');
-          } else {
-            console.error('Failed to send canvas data.');
-          }
-        })
-        .catch((error) => {
-          console.error('Error sending canvas data:', error);
-        });
-    },
     snapPhoto() {
-      const video = this.$refs.video;
       const canvas = this.$refs.canvas;
       const context = canvas.getContext('2d');
-      context.drawImage(video, 0, 0, 320, 240);
+      const video = this.$refs.video;
+
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
     },
     savePhoto() {
       const canvas = this.$refs.canvas;
-      const image = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
-      const tmpLink = document.createElement('a');
-      tmpLink.download = 'image.png';
-      tmpLink.href = image;
-      document.body.appendChild(tmpLink);
-      tmpLink.click();
-      document.body.removeChild(tmpLink);
+      const dataURL = canvas.toDataURL('image/jpeg');
+      const blob = this.dataURLtoBlob(dataURL);
+      const file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+
+      this.fileList.push({
+        name: 'photo.jpg',
+        url: URL.createObjectURL(file),
+        raw: file,
+      });
+    },
+    dataURLtoBlob(dataURL) {
+      const byteString = atob(dataURL.split(',')[1]);
+      const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+      const buffer = new ArrayBuffer(byteString.length);
+      const dataView = new Uint8Array(buffer);
+
+      for (let i = 0; i < byteString.length; i++) {
+        dataView[i] = byteString.charCodeAt(i);
+      }
+
+      return new Blob([buffer], { type: mimeString });
+    },
+    openCamera() {
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          this.$refs.video.srcObject = stream;
+          // 每0.5秒拍照并上传
+          this.timer = setInterval(() => {
+            this.snapPhoto();
+            const canvas = this.$refs.canvas;
+            const dataURL = canvas.toDataURL('image/jpeg');
+            const blob = this.dataURLtoBlob(dataURL);
+            this.uploadPicture(blob);
+          }, 500);
+        })
+        .catch((error) => {
+          console.error('Error opening camera:', error);
+        });
     },
     stopCamera() {
+      const video = this.$refs.video;
+      const stream = video.srcObject;
+
+      if (stream) {
+        const tracks = stream.getTracks();
+        tracks.forEach((track) => track.stop());
+        video.srcObject = null;
+      }
+
+      // 清除定时器
       clearInterval(this.timer);
     }
-  }
+  },
 };
 </script>
 
-<style>
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-        sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-        monospace;
-}
-
-.App {
-    text-align: center;
-}
-
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
-}
-
-.App-header {
-    position: static;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: #0dc4e4;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(16px + 2vmin);
-    color: white;
-}
-
-.App-main {
-    position: static;
-    left: 0;
-    width: 100%;
-    background-color: #0cc3b0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: black;
-}
-
-.App-link {
-    color: #61dafb;
-}
-
-.star {
-    color: #f2ff00;
-}
-
-.small {
-    font-size: 0.75rem;
-}
-
-.thumbnail {
-  margin-top: 20px;
-}
-
-.thumbnail img {
-  max-width: 100%;
-}
-
-/* Tutorial on https://fossheim.io/writing/posts/css-text-gradient. */
+<style scoped>
+  /* Tutorial on https://fossheim.io/writing/posts/css-text-gradient. */
 
 .gradient-text {
   /* Fallback: Set a background color. */
@@ -413,7 +328,7 @@ header {
 h1 {
   font-family: "Archivo Black", sans-serif;
   font-weight: normal;
-  font-size:45px;
+  font-size: 45px;
   text-align: center;
   margin-bottom: 0;
   margin-bottom: -0.25em;
@@ -423,4 +338,29 @@ h1 {
   cursor: pointer;
   width: 605px;
 }
+
+  #camarea {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #camarea video, #camarea canvas {
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  .el-upload__tip {
+    font-size: 16px;
+    margin-top: 10px;
+    color: #666;
+  }
+  .thumbnail img {
+    width: 100px; /* 缩略图宽度 */
+    height: auto;
+    margin: 5px;
+  }
+  .hidden {
+  display: none;
+  }
+
 </style>
