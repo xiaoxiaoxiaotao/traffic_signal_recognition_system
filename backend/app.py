@@ -19,11 +19,11 @@ SUBMITTED = 1
 SUCCESSES = 2
 FAIL = -1
 
-
+'''
 @app.route("/")
 def root():
-    return render_template("index.html", title="Home")
-
+    return render_template("../frontend/src/index.html", title="Home")
+'''
 
 # 表单POST提交图片
 @app.route('/upload', methods=['POST'])
@@ -46,6 +46,7 @@ def upload_file():
             # TODO: UID
             user_request.update(
                 {request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
+            print({request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
             filename = request_id + "_" + secure_filename(file.filename)
             file.save(os.path.join('uploads', filename))  # file.save("./uploads/" + filename)
             result_json = predict(filename, request_id)
@@ -75,17 +76,15 @@ def random_image():
     # img_path = os.path.join(img_dir, img_name)
     return send_from_directory(img_dir, img_name)
 
+# 测试
+@app.route('/api/data')
+def test_return():
+    return json.dumps({"msg": "File uploaded successfully",
+                                "rid": 2,
+                                "code": 10,
+                                "result": 1})
+
+
 
 if __name__ == "__main__":
-    img_path = "D:\PyProjcet\\traffic_signal_recognition_system_taotao\\backend\gtsrb\\test_imgs\\RealImg1.jpg"
-
-    image = cv2.imread(img_path)
-    # 确保图片读取成功
-    if image is None:
-        print("Error: Could not read the image.")
-        exit()
-
-    houghed = hough(image)
-    for img in houghed:
-        predict_result = predict_from_file(img, os.path.join("gtsrb/trained_modules", "gtsrb_1600.pth"))
     app.run(debug=True, host="0.0.0.0", port=8000)
