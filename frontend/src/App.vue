@@ -227,19 +227,32 @@ submitUpload() {
         return;
       }
 
-      const file = this.fileList[0];
+      const file = this.fileList[0].raw; // 获取原始文件
       const formData = new FormData();
-      formData.append('file', file.raw);
+      formData.append('file', file, file.name);
       formData.append('rid', rid); // 将rid添加到formData中
 
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'http://127.0.0.1:8000/upload/', true);
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
+      const url = 'http://127.0.0.1:8000/upload/'; // 确认URL正确
+      xhr.open('POST', url, true);
+
+      // 添加错误处理
+      xhr.onerror = function() {
+        console.error('Request error');
+      };
+
+      xhr.onload = function() {
+        if (xhr.status === 200) {
           const response = JSON.parse(xhr.responseText);
           document.getElementById('info').innerText = response.message;
+        } else {
+          console.error('Upload failed:', xhr.status, xhr.statusText);
+          document.getElementById('info').innerText = `Upload failed: ${xhr.status} ${xhr.statusText}`;
         }
       };
+
+      console.log('Uploading to:', url);
+      console.log('FormData:', formData);
       xhr.send(formData);
     },
 
