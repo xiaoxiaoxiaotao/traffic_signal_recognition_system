@@ -1,6 +1,9 @@
 from PIL import Image
+from torchvision.utils import save_image
+from torchvision import transforms
 import torchvision
 import torch
+import numpy as np
 
 traffic_signs = [
     "Speed limit (20km/h)",
@@ -49,8 +52,26 @@ traffic_signs = [
 ]
 
 
-def predict_from_file(img_path: str, module_filename: str) -> str:
-    image = Image.open(img_path)
+def predict_from_file(img, module_filename: str) -> str:
+    if type(img) == str:
+        image = Image.open(img)
+    elif type(img) == np.ndarray:
+        # print(img)
+        to_tenser = transforms.Compose([transforms.ToTensor()])
+        image = img[:, :, ::-1]
+        image = Image.fromarray(image, mode="RGB")
+        image = to_tenser(image)
+    else:
+        image = img
+
+    if type(image) != torch.Tensor:
+        raise ValueError(f'Error type of img, which should be a filepath(str), np.ndarray, or torch.Tensor. '
+                         f'Got {type(image)}.')
+
+    # TODO: 这个快变成狗屎了，先转成tenser存文件又读成PIL Image，看看能不能改。
+    save_image(image, "temp_tensor.jpg")
+    image = Image.open("temp_tensor.jpg")
+
     transform = torchvision.transforms.Compose(
         [torchvision.transforms.Resize((32, 32)),
          torchvision.transforms.ToTensor()
@@ -75,4 +96,5 @@ def predict_from_file(img_path: str, module_filename: str) -> str:
     result = ""
     for index in predicted_indices:
         result = traffic_signs[index]
+    print(result)
     return result

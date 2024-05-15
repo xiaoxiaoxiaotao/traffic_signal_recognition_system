@@ -11,7 +11,7 @@ def test_show(img, name="output"):
 def tuoyuan(img):
     if_tuoyuan = False
     binary = cv2.Canny(img, 30, 200)
-    test_show(binary, "Canny")
+    # test_show(binary, "Canny")
     cnt, hierarchy = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     min_width, min_height = img.shape[0] * 0.48, img.shape[0] * 0.48  # 椭圆最小大小
     max_width, max_height = img.shape[0] * 0.85, img.shape[0] * 0.85  # 椭圆最大大小
@@ -19,7 +19,7 @@ def tuoyuan(img):
     center_point = []
     for i in range(len(cnt)):
         # 椭圆拟合
-        print(i, len(cnt[i]))
+        # print(i, len(cnt[i]))
         if len(cnt[i]) >= 5:
             # print(cnt[i])
             max_x, max_y = 0, 0
@@ -48,12 +48,12 @@ def tuoyuan(img):
             if max_width >= max_x - min_x >= min_width and max_height >= max_y - min_y >= min_height:
                 if len(center_point) == 0:
                         center_point.append([(max_x - min_x) / 2, (max_y - min_y) / 2])
-                        print(center_point)
+                        print("检测到：中心", center_point)
                         ellipse = cv2.fitEllipse(cnt[i])
                         # 绘制椭圆
                         cv2.ellipse(img, ellipse, (0, 255, 255), 2)
                         if_tuoyuan = True
-                        # test_show(img)
+                        test_show(img)
                 else:
                     too_close = False
                     for point in center_point:
@@ -67,7 +67,7 @@ def tuoyuan(img):
                         # 绘制椭圆
                         cv2.ellipse(img, ellipse, (0, 255, 255), 2)
                         if_tuoyuan = True
-                        # test_show(img)
+                        test_show(img)
     return if_tuoyuan
 
 def hough(image):
@@ -86,6 +86,7 @@ def hough(image):
                                param1=65, param2=70,  # 1太高漏检，2太低错检太高漏检
                                minRadius=min_radius, maxRadius=max_radius)
 
+    results = []
     # 确保找到了圆
     if circles is not None:
         # 将坐标和半径从浮点数转换为整数
@@ -93,7 +94,7 @@ def hough(image):
 
         # 遍历检测到的每个圆
         for (x, y, radius) in circles[0, :]:
-            # 计算包含圆的边界框（这里简单地使用半径的两倍作为宽高）
+            # 计算包含圆的边界框（这里简单地使用半径的两倍作为宽高，并适当外扩）
             left = max(0, int(x - 1.5 * radius))
             top = max(0, int(y - 1.5 * radius))
             right = min(gary_image.shape[1], int(x + 1.5 * radius))
@@ -104,12 +105,18 @@ def hough(image):
             # 在裁剪区域中检测椭圆，如果有结果，椭圆检测中画黄色椭圆，下面画绿色霍夫圆，并显示
             if_tuoyuan = tuoyuan(circle_roi)
             # 绘制圆形和圆心（仅用于调试，可以注释掉）
-            cv2.circle(circle_roi, (x - left, y - top), radius, (0, 255, 0), 2)
-            cv2.circle(circle_roi, (x - left, y - top), 2, (0, 0, 255), -1)
+            # cv2.circle(circle_roi, (x - left, y - top), radius, (0, 255, 0), 2)
+            # cv2.circle(circle_roi, (x - left, y - top), 2, (0, 0, 255), -1)
 
-            test_show(circle_roi, f'{x},{y}, {if_tuoyuan}')
+            # test_show(circle_roi, f'{x},{y}, {if_tuoyuan}')
+
+            if if_tuoyuan:
+                results.append(image[top:bottom, left:right])
+
+    return results
 
 
+# Test
 img_path = "D:\PyProjcet\\traffic_signal_recognition_system_taotao\\backend\gtsrb\\test_imgs\\RealImg1.jpg"
 
 image = cv2.imread(img_path)

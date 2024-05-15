@@ -8,6 +8,7 @@ import random
 
 from gtsrb.gtsrb import *
 from gtsrb.predict import *
+from Hough1 import *
 
 
 app = Flask(__name__)
@@ -76,4 +77,15 @@ def random_image():
 
 
 if __name__ == "__main__":
+    img_path = "D:\PyProjcet\\traffic_signal_recognition_system_taotao\\backend\gtsrb\\test_imgs\\RealImg1.jpg"
+
+    image = cv2.imread(img_path)
+    # 确保图片读取成功
+    if image is None:
+        print("Error: Could not read the image.")
+        exit()
+
+    houghed = hough(image)
+    for img in houghed:
+        predict_result = predict_from_file(img, os.path.join("gtsrb/trained_modules", "gtsrb_1600.pth"))
     app.run(debug=True, host="0.0.0.0", port=8000)
