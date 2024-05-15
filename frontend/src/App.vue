@@ -40,6 +40,7 @@
     <el-tabs :tab-position="tabPosition" style="height: 600px;">
       <el-tab-pane label="Photo upload">
         <el-upload
+          id="img_upload"
           class="upload-demo"
           action="https://jsonplaceholder.typicode.com/posts/"
           :on-preview="handlePreview"
@@ -158,26 +159,40 @@ export default {
       };
       reader.readAsDataURL(file);
     },
-    uploadPicture(imageBlob) {
-      const rid = this.rid;
+    submitUpload() {
+      let imageElement = this.fileList[0];
+      let reader = new FileReader();
+      let IMG;
+      let imageBlob;
+      reader.onload = function(e) {
+        imageBlob = e.target.result;
+        fetch(imageBlob)
+        .then(res => res.blob())
+        .then(blob => {
+          const rid = this.rid;
 
-      const formData = new FormData();
-      formData.append('picture', imageBlob, 'photo.jpg');
-      formData.append('rid', rid);
+          const formData = new FormData();
+          formData.append('picture', blob, 'photo.jpg');
+          formData.append('rid', rid);
 
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', '/upload', true);
-      xhr.onload = function() {
-        const response = JSON.parse(xhr.responseText);
-        console.log(response.code);
-        if (xhr.status === 200) {
-          alert('上传成功！\n服务端给出的响应：' + response.message);
-        } else {
-          alert('上传失败：' + xhr.responseText);
-        }
-      };
-      xhr.send(formData);
-    },
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', 'http://127.0.0.1:8000/upload', true);
+          xhr.onload = function() {
+            const response = JSON.parse(xhr.responseText);
+            console.log(response.code);
+            if (xhr.status === 200) {
+              alert('上传成功！\n服务端给出的响应：' + response.message);
+            } else {
+              alert('上传失败：' + xhr.responseText);
+            }
+          };
+        xhr.send(formData);
+      });
+  }
+  reader.readAsDataURL(imageElement.raw);
+},
+
+
     snapPhoto() {
       const canvas = this.$refs.canvas;
       const context = canvas.getContext('2d');

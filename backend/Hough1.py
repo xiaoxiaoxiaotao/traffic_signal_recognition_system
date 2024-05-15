@@ -117,7 +117,7 @@ def hough(image):
 
 
 # Test
-img_path = "D:\PyProjcet\\traffic_signal_recognition_system_taotao\\backend\gtsrb\\test_imgs\\RealImg1.jpg"
+'''img_path = "D:\PyProjcet\\traffic_signal_recognition_system_taotao\\backend\gtsrb\\test_imgs\\RealImg1.jpg"
 
 image = cv2.imread(img_path)
 # 确保图片读取成功
@@ -128,4 +128,4 @@ if image is None:
 image = image.astype(np.uint8)
 test_show(image, "Original")
 
-hough(image)
+hough(image)'''

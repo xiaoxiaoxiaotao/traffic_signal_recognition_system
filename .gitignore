@@ -1,4 +1,5 @@
 
 /.idea
 /backend/gtsrb/data_image
-__pycache__/
+/__pycache__/
+/frontend/node_modules/
