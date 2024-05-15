@@ -181,7 +181,8 @@ export default {
       };
       reader.readAsDataURL(file);
     },
-    submitUpload() {
+    //这是chatGPT更改之前的结果
+    /*submitUpload() {
       let imageElement = this.fileList[0];
       let reader = new FileReader();
       let imageBlob;
@@ -212,15 +213,80 @@ export default {
       });
   }
   reader.readAsDataURL(imageElement.raw);
-},
+},*/
+//这个是ChatGPT更改之后的结果
+submitUpload() {
+      if (this.fileList.length === 0) {
+        this.$message.error('Please select a file first!');
+        return;
+      }
 
+      const rid = this.rid; // 获取用户输入的rid
+      if (!rid) {
+        this.$message.error('Please enter the rid!');
+        return;
+      }
+
+      const file = this.fileList[0];
+      const formData = new FormData();
+      formData.append('file', file.raw);
+      formData.append('rid', rid); // 将rid添加到formData中
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://127.0.0.1:8000/upload/', true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          document.getElementById('info').innerText = response.message;
+        }
+      };
+      xhr.send(formData);
+    },
 
     snapPhoto() {
+      const video = this.$refs.video;
       const canvas = this.$refs.canvas;
       const context = canvas.getContext('2d');
-      const video = this.$refs.video;
 
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob((blob) => {
+        this.convertBlobToJPG(blob).then((jpgBlob) => {
+          const formData = new FormData();
+          formData.append('file', jpgBlob, 'photo.jpg');
+          formData.append('rid', this.rid); // 将rid添加到formData中
+
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', 'http://127.0.0.1:8000/upload/', true);
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              const response = JSON.parse(xhr.responseText);
+              document.getElementById('info').innerText = response.message;
+            }
+          };
+          xhr.send(formData);
+        });
+      }, 'image/jpeg');
+    },
+    convertBlobToJPG(blob) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            context.drawImage(img, 0, 0);
+            canvas.toBlob((jpgBlob) => {
+              resolve(jpgBlob);
+            }, 'image/jpeg');
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(blob);
+      });
     },
     savePhoto() {
       const canvas = this.$refs.canvas;
@@ -267,12 +333,11 @@ export default {
     stopCamera() {
       const video = this.$refs.video;
       const stream = video.srcObject;
+      const tracks = stream.getTracks();
 
-      if (stream) {
-        const tracks = stream.getTracks();
-        tracks.forEach((track) => track.stop());
-        video.srcObject = null;
-      }
+      tracks.forEach((track) => {
+        track.stop();
+      });
 
       // 清除定时器
       clearInterval(this.timer);
