@@ -101,6 +101,17 @@ export default {
     };
   },
   methods: {
+    test(){
+    	let data={
+    		"1231":"123"
+    	}
+      axios.post('http://127.0.0.1:8000',data)
+      .then(res=>{
+      		//console里面打印后端来的response数据
+        console.log(res.data);
+      })
+    },
+
     handleClick(tab, event) {
       console.log(tab, event);
     },
