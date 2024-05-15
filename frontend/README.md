@@ -14,6 +14,7 @@
  - Enter your local directory, and install dependencies:
 
 ``` bash
+npm install -g yarn
 yarn
 ```
 
