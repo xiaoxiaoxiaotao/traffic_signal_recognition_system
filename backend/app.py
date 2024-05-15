@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, send_from_directory
+from flask_cors import CORS
 import json
 from werkzeug.utils import secure_filename
 
@@ -12,6 +13,7 @@ from Hough1 import *
 
 
 app = Flask(__name__)
+CORS(app)
 user_request = {}
 
 REQUESTED = 0
@@ -20,9 +22,9 @@ SUCCESSES = 2
 FAIL = -1
 
 
-@app.route("/")
+'''@app.route("/")
 def root():
-    return render_template("index.html", title="Home")
+    return render_template("index.html", title="Home")'''
 
 
 # 表单POST提交图片
@@ -81,7 +83,7 @@ def random_image():
 
 
 # 测试
-@app.route('/api/data')
+@app.route('/test', methods=['GET', 'POST', 'OPTIONS'])
 def test_return():
     return json.dumps({"msg": "File uploaded successfully",
                                 "rid": 2,
