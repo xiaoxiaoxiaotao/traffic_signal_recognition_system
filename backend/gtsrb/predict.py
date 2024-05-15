@@ -55,6 +55,8 @@ traffic_signs = [
 def predict_from_file(img, module_filename: str) -> str:
     if type(img) == str:
         image = Image.open(img)
+        to_tenser = transforms.Compose([transforms.ToTensor()])
+        image = to_tenser(image)
     elif type(img) == np.ndarray:
         # print(img)
         to_tenser = transforms.Compose([transforms.ToTensor()])

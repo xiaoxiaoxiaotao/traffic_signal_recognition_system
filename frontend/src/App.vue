@@ -229,7 +229,7 @@ submitUpload() {
 
       const file = this.fileList[0].raw; // 获取原始文件
       const formData = new FormData();
-      formData.append('file', file, file.name);
+      formData.append('picture', file, file.name);
       formData.append('rid', rid); // 将rid添加到formData中
 
       const xhr = new XMLHttpRequest();
@@ -242,12 +242,12 @@ submitUpload() {
       };
 
       xhr.onload = function() {
+        let response = JSON.parse(xhr.responseText);
+        console.log(response.code);
         if (xhr.status === 200) {
-          const response = JSON.parse(xhr.responseText);
-          document.getElementById('info').innerText = response.message;
+            alert('上传成功！\n服务端给出结果是：' + response.result);
         } else {
-          console.error('Upload failed:', xhr.status, xhr.statusText);
-          document.getElementById('info').innerText = `Upload failed: ${xhr.status} ${xhr.statusText}`;
+            alert('上传失败！\n服务端答道：' + response.msg);
         }
       };
 
@@ -266,7 +266,7 @@ submitUpload() {
       canvas.toBlob((blob) => {
         this.convertBlobToJPG(blob).then((jpgBlob) => {
           const formData = new FormData();
-          formData.append('file', jpgBlob, 'photo.jpg');
+          formData.append('picture', jpgBlob, 'photo.jpg');
           formData.append('rid', this.rid); // 将rid添加到formData中
 
           const xhr = new XMLHttpRequest();

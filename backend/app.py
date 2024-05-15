@@ -19,15 +19,16 @@ SUBMITTED = 1
 SUCCESSES = 2
 FAIL = -1
 
-'''
+
 @app.route("/")
 def root():
-    return render_template("../frontend/src/index.html", title="Home")
-'''
+    return render_template("index.html", title="Home")
+
 
 # 表单POST提交图片
-@app.route('/upload', methods=['POST'])
+@app.route('/upload/', methods=['POST'])
 def upload_file():
+    # print("有人访问")
     if 'picture' not in request.files:
         result_json = json.dumps({"msg": "No file part", "code": 20, "result": "FAIL"})
         return result_json, 400
@@ -48,12 +49,14 @@ def upload_file():
                 {request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
             print({request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
             filename = request_id + "_" + secure_filename(file.filename)
+            # print(filename)
             file.save(os.path.join('uploads', filename))  # file.save("./uploads/" + filename)
             result_json = predict(filename, request_id)
             return result_json, 200
 
 
 def predict(filename, request_id):
+    print(os.path.join('uploads', filename))
     predict_result = predict_from_file(os.path.join('uploads', filename),
                                         os.path.join("gtsrb/trained_modules", "gtsrb_1906.pth"))
     print(user_request, predict_result)
@@ -65,7 +68,7 @@ def predict(filename, request_id):
 
 
 # 获得一张测试图片（临时）
-@app.route('/test_img')
+@app.route('/test_img/')
 def random_image():
     # 获取图片文件列表
     img_dir = "gtsrb/test_imgs"
@@ -76,6 +79,7 @@ def random_image():
     # img_path = os.path.join(img_dir, img_name)
     return send_from_directory(img_dir, img_name)
 
+
 # 测试
 @app.route('/api/data')
 def test_return():
@@ -83,7 +87,6 @@ def test_return():
                                 "rid": 2,
                                 "code": 10,
                                 "result": 1})
-
 
 
 if __name__ == "__main__":
