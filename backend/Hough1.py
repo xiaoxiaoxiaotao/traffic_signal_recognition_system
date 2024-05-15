@@ -108,7 +108,7 @@ def hough(image):
             # cv2.circle(circle_roi, (x - left, y - top), radius, (0, 255, 0), 2)
             # cv2.circle(circle_roi, (x - left, y - top), 2, (0, 0, 255), -1)
 
-            # test_show(circle_roi, f'{x},{y}, {if_tuoyuan}')
+            test_show(circle_roi, f'{x},{y}, {if_tuoyuan}')
 
             if if_tuoyuan:
                 results.append(image[top:bottom, left:right])

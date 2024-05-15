@@ -98,5 +98,5 @@ def predict_from_file(img, module_filename: str) -> str:
     result = ""
     for index in predicted_indices:
         result = traffic_signs[index]
-    print(result)
+    # print(result)
     return result
