@@ -46,6 +46,7 @@ def upload_file():
             # TODO: UID
             user_request.update(
                 {request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
+            print({request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
             filename = request_id + "_" + secure_filename(file.filename)
             file.save(os.path.join('uploads', filename))  # file.save("./uploads/" + filename)
             result_json = predict(filename, request_id)

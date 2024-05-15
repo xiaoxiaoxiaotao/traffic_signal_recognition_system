@@ -162,18 +162,18 @@ export default {
     submitUpload() {
       let imageElement = this.fileList[0];
       let reader = new FileReader();
-      let IMG;
       let imageBlob;
       reader.onload = function(e) {
         imageBlob = e.target.result;
         fetch(imageBlob)
         .then(res => res.blob())
         .then(blob => {
-          const rid = this.rid;
+          let rid_num = this.rid;
+          console.log(rid_num);
 
           const formData = new FormData();
           formData.append('picture', blob, 'photo.jpg');
-          formData.append('rid', rid);
+          formData.append('rid', rid_num);
 
           const xhr = new XMLHttpRequest();
           xhr.open('POST', 'http://127.0.0.1:8000/upload', true);
