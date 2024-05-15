@@ -51,6 +51,7 @@
         >
           <el-button slot="trigger" size="large" type="primary">Please click here to pick the picture.</el-button>
           <el-button style="margin-left: 10px;" size="large" type="success" @click="submitUpload">Upload</el-button>
+          <el-button style="margin-left: 10px;" size="large" type="success" @click="test">test</el-button>
           <label for="rid_temp">rid</label>
           <input type="text" id="rid_temp" v-model="rid" />
           <div slot="tip" class="el-upload__tip">only the jpg files，no more than 2MB</div>
@@ -105,11 +106,16 @@ export default {
     	let data={
     		"1231":"123"
     	}
-      axios.post('http://127.0.0.1:8000',data)
-      .then(res=>{
-      		//console里面打印后端来的response数据
-        console.log(res.data);
-      })
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://127.0.0.1:8000/test', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          console.log(response);
+        }
+      };
+      xhr.send(JSON.stringify(data));
     },
 
     handleClick(tab, event) {
