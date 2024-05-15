@@ -19,11 +19,11 @@ SUBMITTED = 1
 SUCCESSES = 2
 FAIL = -1
 
-
+'''
 @app.route("/")
 def root():
-    return render_template("index.html", title="Home")
-
+    return render_template("../frontend/src/index.html", title="Home")
+'''
 
 # 表单POST提交图片
 @app.route('/upload', methods=['POST'])
@@ -77,6 +77,7 @@ def random_image():
 
 
 if __name__ == "__main__":
+    '''
     img_path = "D:\PyProjcet\\traffic_signal_recognition_system_taotao\\backend\gtsrb\\test_imgs\\RealImg1.jpg"
 
     image = cv2.imread(img_path)
@@ -88,4 +89,6 @@ if __name__ == "__main__":
     houghed = hough(image)
     for img in houghed:
         predict_result = predict_from_file(img, os.path.join("gtsrb/trained_modules", "gtsrb_1600.pth"))
+
+    '''
     app.run(debug=True, host="0.0.0.0", port=8000)

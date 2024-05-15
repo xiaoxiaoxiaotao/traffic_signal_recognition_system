@@ -115,7 +115,7 @@ def hough(image):
 
     return results
 
-
+'''
 # Test
 img_path = "D:\PyProjcet\\traffic_signal_recognition_system_taotao\\backend\gtsrb\\test_imgs\\RealImg1.jpg"
 
@@ -129,3 +129,4 @@ image = image.astype(np.uint8)
 test_show(image, "Original")
 
 hough(image)
+'''
