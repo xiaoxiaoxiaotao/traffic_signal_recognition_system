@@ -10,6 +10,9 @@
           <div><b>Back-end:</b> Li Songtao, Tang Disen</div>
           <div><b>Algorithms and models:</b> Li zhaorui, Wang Lisheng</div>
         </p>
+        <p>
+          <div><b>If you need our src:</b><a href="https://github.com/xiaoxiaoxiaotao/traffic_signal_recognition_system" target="_blank">please click here!</a>.</div>
+        </p>
       </el-tab-pane>
 
       <el-tab-pane label="About the project" name="second">
@@ -48,8 +51,8 @@
           :before-upload="beforeAvatarUpload"
           list-type="picture"
         >
-          <el-button slot="trigger" size="large" type="primary">Please click here to pick the picture.</el-button>
-          <el-button style="margin-left: 10px;" size="large" type="success" @click="submitUpload">Upload</el-button>
+          <el-button slot="trigger" size="large" type="success">Please click here to pick the picture.</el-button>
+          <el-button style="margin-left: 10px;" size="large" type="primary" @click="submitUpload">Upload</el-button>
           <label for="rid_temp">rid</label>
           <input type="text" id="rid_temp" v-model="rid" />
           <div slot="tip" class="el-upload__tip">only the jpg files，no more than 2MB</div>
@@ -72,14 +75,14 @@
             <el-button @click="snapPhoto">Snap Photo</el-button>
             <el-button @click="savePhoto">Save Photo</el-button>
             -->
-            <el-button @click="openCamera">Open Camera</el-button>
+            <el-button @click="openCamera" type="primary">Open Camera</el-button>
           </div>
           <!--隐藏的第二个屏幕
           <canvas ref="canvas" width="320" height="240"></canvas>
           -->
           <canvas ref="canvas" :class="{ hidden: !isCanvasVisible }" width="320" height="240"></canvas>
           <div>
-            <el-button @click="stopCamera" value="Stop">Stop</el-button>
+            <el-button @click="stopCamera" value="Stop" >Stop</el-button>
           </div>
         </div>
       </el-tab-pane>
@@ -317,7 +320,7 @@ export default {
 
 /* Style the rest of the page. */
 body {
-  background-color: #fdf1f0;
+  background: #e8995d ;
 }
 
 header {
@@ -337,6 +340,10 @@ h1 {
   margin-right: auto;
   cursor: pointer;
   width: 605px;
+}
+
+p {
+  font-family: "Helvetica Neue"
 }
 
   #camarea {
