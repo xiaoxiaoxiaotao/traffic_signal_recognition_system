@@ -33,16 +33,16 @@ def root():
 def upload_file():
     # print("有人访问")
     if 'picture' not in request.files:
-        result_json = json.dumps({"msg": "No file part", "code": 20, "result": "FAIL"})
-        return result_json, 400
+        return_json = json.dumps({"msg": "No file part", "code": 20, "result": "FAIL"})
+        return return_json, 400
     file = request.files['picture']
     if file.filename == '':
-        result_json = json.dumps({"msg": "No selected file", "code": 20, "result": "FAIL"})
-        return result_json, 400
+        return_json = json.dumps({"msg": "No selected file", "code": 20, "result": "FAIL"})
+        return return_json, 400
     if file:
         if "rid" not in request.form or request.form["rid"] == "":
-            result_json = json.dumps({"msg": "No rid", "code": 20, "result": "FAIL"})
-            return result_json, 400
+            return_json = json.dumps({"msg": "No rid", "code": 20, "result": "FAIL"})
+            return return_json, 400
         else:
             request_id = request.form["rid"]
             # TODO: Let user_request update with the filename rather than the file object.
@@ -56,12 +56,24 @@ def upload_file():
             file.save(os.path.join('uploads', filename))  # file.save("./uploads/" + filename)
             predict_result = predict(filename, request_id)
             user_request[request_id] = predict_result
-            result_json = json.dumps({"msg": "File uploaded successfully",
+
+            num_of_results = len(predict_result)
+            sub_result_json = []
+            for x in range(num_of_results):
+                sub_result = {}
+                sub_result.update({"max_result": predict_result[x][0]})
+                sub_result.update({indices_category: predict_result[x][1][indices_category]
+                                   for indices_category in predict_result[x][1]})
+                sub_result_json.append(json.dumps(sub_result))
+            # print(sub_result_json)
+            result_json = json.dumps({"result{}".format(x): sub_result_json[x] for x in range(num_of_results)})
+            # 识别到了几个标志，result_json就包含几个result，每个result的max_result是预测值，剩余各项是置信度大于0.1的类别及其置信度。
+            return_json = json.dumps({"msg": "File uploaded successfully",
                                       "rid": request_id,
                                       "code": 10,
-                                      "result": predict_result})
+                                      "result": result_json})
             print(user_request[request_id])
-            return result_json, 200
+            return return_json, 200
 
 
 def predict(filename, request_id):
@@ -71,12 +83,15 @@ def predict(filename, request_id):
     predict_result = []
     if len(houghed_img) < 1:
         predict_result.append(predict_from_file(os.path.join('uploads', filename),
-                                            os.path.join("gtsrb/trained_modules1", "gtsrb1_14_1715858149.2807202-44.87744349311106_93.13539123535156%.pth")))
+                                                os.path.join("gtsrb/trained_modules1",
+                                                             "gtsrb1_14_1715858149.2807202-44.87744349311106_93.13539123535156%.pth"),
+                                                True))
     else:
         for img in houghed_img:
             predict_result.append(predict_from_file(img,
-                                               os.path.join("gtsrb/trained_modules1",
-                                                            "gtsrb1_14_1715858149.2807202-44.87744349311106_93.13539123535156%.pth")))
+                                                    os.path.join("gtsrb/trained_modules1",
+                                                                 "gtsrb1_14_1715858149.2807202-44.87744349311106_93.13539123535156%.pth"),
+                                                    True))
     # print(user_request, predict_result)
     return predict_result
 

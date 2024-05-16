@@ -52,7 +52,7 @@ traffic_signs = [
 ]
 
 
-def predict_from_file(img, module_filename: str) -> str:
+def predict_from_file(img, module_filename: str, if_cuda: bool = False) -> [str, dict]:
     if type(img) == str:
         image = Image.open(img)
         to_tenser = transforms.Compose([transforms.ToTensor()])
@@ -90,16 +90,28 @@ def predict_from_file(img, module_filename: str) -> str:
     #关闭Dropout和BatchNorm等特性
     model.eval()
 
-    if torch.cuda.is_available():
+    if if_cuda and torch.cuda.is_available():
         model, image = model.cuda(), image.cuda()
 
     # 预测
     with torch.no_grad():
         output = model(image)
-    # print(output.argmax(1))
-    predicted_indices = output.argmax(1)  # 获取每个样本预测类别的索引
-    result = ""
+    # print(output, output.argmax(1))
+
+    # 获取每个样本预测类别的索引
+    predicted_indices = output.argmax(1)
+    max_result = ""
     for index in predicted_indices:
-        result = traffic_signs[index]
-    # print(result)
-    return result
+        max_result = traffic_signs[index]
+
+    # 获取置信度>0.1的分类
+    probability = torch.nn.functional.softmax(output, dim=1)
+    zero_point_one = torch.gt(probability, 0.1)  # 取>0.1的项
+    indices_tensor = torch.nonzero(zero_point_one)
+    indices_dict = {}
+    for x in indices_tensor:
+        category = traffic_signs[x[1]]
+        indices = probability[0, x[1]].item()
+        indices_dict.update({category: indices})
+    # print(indices_dict)
+    return [max_result, indices_dict]
