@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+# 基于lzr的gtsrb改，增加了层数和深度。
 
 def test_show(img, name="output"):
     cv2.imshow(name, img)
@@ -53,7 +54,7 @@ def tuoyuan(img):
                         # 绘制椭圆
                         cv2.ellipse(img, ellipse, (0, 255, 255), 2)
                         if_tuoyuan = True
-                        test_show(img)
+                        # test_show(img)
                 else:
                     too_close = False
                     for point in center_point:
@@ -67,8 +68,9 @@ def tuoyuan(img):
                         # 绘制椭圆
                         cv2.ellipse(img, ellipse, (0, 255, 255), 2)
                         if_tuoyuan = True
-                        test_show(img)
+                        # test_show(img)
     return if_tuoyuan
+
 
 def hough(image):
     # 转换为灰度图像
@@ -108,7 +110,7 @@ def hough(image):
             # cv2.circle(circle_roi, (x - left, y - top), radius, (0, 255, 0), 2)
             # cv2.circle(circle_roi, (x - left, y - top), 2, (0, 0, 255), -1)
 
-            test_show(circle_roi, f'{x},{y}, {if_tuoyuan}')
+            # test_show(circle_roi, f'{x},{y}, {if_tuoyuan}')
 
             if if_tuoyuan:
                 results.append(image[top:bottom, left:right])

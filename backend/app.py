@@ -7,7 +7,8 @@ import time
 import os
 import random
 
-from gtsrb.gtsrb import *
+# from gtsrb.gtsrb import *
+from gtsrb.gtsrb1 import *
 from gtsrb.predict import *
 from Hough1 import *
 
@@ -22,9 +23,9 @@ SUCCESSES = 2
 FAIL = -1
 
 
-'''@app.route("/")
+@app.route("/")
 def root():
-    return render_template("index.html", title="Home")'''
+    return render_template("index.html", title="Home")
 
 
 # 表单POST提交图片
@@ -65,8 +66,17 @@ def upload_file():
 
 def predict(filename, request_id):
     # print(os.path.join('uploads', filename))
-    predict_result = predict_from_file(os.path.join('uploads', filename),
-                                        os.path.join("gtsrb/trained_modules", "gtsrb_1700.pth"))
+    upload_file = cv2.imread(os.path.join('uploads', filename), cv2.IMREAD_COLOR)
+    houghed_img = hough(upload_file)
+    predict_result = []
+    if len(houghed_img) < 1:
+        predict_result.append(predict_from_file(os.path.join('uploads', filename),
+                                            os.path.join("gtsrb/trained_modules1", "gtsrb1_14_1715858149.2807202-44.87744349311106_93.13539123535156%.pth")))
+    else:
+        for img in houghed_img:
+            predict_result.append(predict_from_file(img,
+                                               os.path.join("gtsrb/trained_modules1",
+                                                            "gtsrb1_14_1715858149.2807202-44.87744349311106_93.13539123535156%.pth")))
     # print(user_request, predict_result)
     return predict_result
 

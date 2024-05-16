@@ -75,20 +75,23 @@ def predict_from_file(img, module_filename: str) -> str:
     image = Image.open("temp_tensor.jpg")
 
     transform = torchvision.transforms.Compose(
-        [torchvision.transforms.Resize((32, 32)),
+        [torchvision.transforms.Resize((64, 64)),
          torchvision.transforms.ToTensor()
     ])
 
     # transform the image
     image = transform(image)
     # image = image.unsqueeze(0)  # Add a batch dimension
-    image = torch.reshape(image, (1, 3, 32, 32))
+    image = torch.reshape(image, (1, 3, 64, 64))
 
     # 加载模型文件
     model = torch.load(module_filename)
 
     #关闭Dropout和BatchNorm等特性
     model.eval()
+
+    if torch.cuda.is_available():
+        model, image = model.cuda(), image.cuda()
 
     # 预测
     with torch.no_grad():
