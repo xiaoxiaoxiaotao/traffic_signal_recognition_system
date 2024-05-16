@@ -49,19 +49,20 @@ def upload_file():
             # TODO: No same rid
             # TODO: UID
             user_request.update(
-                {request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
+                {request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None, "houghed": False}})
             # print({request_id: {"user": None, "statu": REQUESTED, "time": time.time(), "pic": file, "result": None}})
             filename = request_id + "_" + secure_filename(file.filename)
             # print(filename)
             file.save(os.path.join('uploads', filename))  # file.save("./uploads/" + filename)
-            predict_result = predict(filename, request_id)
-            user_request[request_id] = predict_result
+            predict_result, houghed = predict(filename, request_id)
+            user_request[request_id]["result"] = predict_result
+            user_request[request_id]["houghed"] = houghed
 
             num_of_results = len(predict_result)
             sub_result_json = []
             for x in range(num_of_results):
                 sub_result = {}
-                sub_result.update({"max_result": predict_result[x][0]})
+                sub_result.update({"houghed": houghed, "max_result": predict_result[x][0]})
                 sub_result.update({indices_category: predict_result[x][1][indices_category]
                                    for indices_category in predict_result[x][1]})
                 sub_result_json.append(json.dumps(sub_result))
@@ -86,14 +87,16 @@ def predict(filename, request_id):
                                                 os.path.join("gtsrb/trained_modules1",
                                                              "gtsrb1_14_1715858149.2807202-44.87744349311106_93.13539123535156%.pth"),
                                                 True))
+        houghed = False
     else:
         for img in houghed_img:
             predict_result.append(predict_from_file(img,
                                                     os.path.join("gtsrb/trained_modules1",
                                                                  "gtsrb1_14_1715858149.2807202-44.87744349311106_93.13539123535156%.pth"),
                                                     True))
+        houghed = True
     # print(user_request, predict_result)
-    return predict_result
+    return predict_result, houghed
 
 
 # 获得一张测试图片（临时）
