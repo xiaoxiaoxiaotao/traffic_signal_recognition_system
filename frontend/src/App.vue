@@ -55,7 +55,9 @@
 
           <el-button slot="trigger" size="large" type="primary">Please click here to pick the picture.</el-button>
           <el-button style="margin-left: 10px;" size="large" type="success" @click="submitUpload">Upload</el-button>
+           <!--
           <el-button style="margin-left: 10px;" size="large" type="success" @click="test">test</el-button>
+          -->
 
           <label for="rid_temp">rid</label>
           <input type="text" id="rid_temp" v-model="rid" />
