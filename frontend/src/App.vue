@@ -42,6 +42,11 @@
     </el-radio-group>
     <el-tabs :tab-position="tabPosition" style="height: 600px;">
       <el-tab-pane label="Photo upload">
+                <!-- 新增的输出框 -->
+                <div  class="output-box">
+          <h3>Server Response:</h3>
+          <p>{{ serverResponse }}</p>
+        </div>
         <el-upload
           id="img_upload"
           class="upload-demo"
@@ -74,6 +79,11 @@
       </el-tab-pane>
 
       <el-tab-pane label="Camarea">
+           <!-- 新增的输出框 -->
+        <div  class="output-box">
+          <h3>Server Response:</h3>
+          <p>{{ serverResponse }}</p>
+        </div>
         <div id="camarea">
           <video ref="video" width="320" height="240" autoplay></video>
           <div>
@@ -90,6 +100,7 @@
           <div>
             <el-button @click="stopCamera" value="Stop" >Stop</el-button>
           </div>
+
         </div>
       </el-tab-pane>
     </el-tabs>
@@ -105,7 +116,8 @@ export default {
       fileList: [],
       timer: null,
       tabPosition: 'left',
-      rid: ''
+      rid: '',
+      serverResponse: '' // 新增的属性
     };
   },
   methods: {
@@ -183,41 +195,7 @@ export default {
       };
       reader.readAsDataURL(file);
     },
-    //这是chatGPT更改之前的结果
-    /*submitUpload() {
-      let imageElement = this.fileList[0];
-      let reader = new FileReader();
-      let imageBlob;
-      reader.onload = function(e) {
-        imageBlob = e.target.result;
-        fetch(imageBlob)
-        .then(res => res.blob())
-        .then(blob => {
-          let rid_num = this.rid;
-          console.log(rid_num);
-
-          const formData = new FormData();
-          formData.append('picture', blob, 'photo.jpg');
-          formData.append('rid', rid_num);
-
-          const xhr = new XMLHttpRequest();
-          xhr.open('POST', 'http://127.0.0.1:8000/upload', true);
-          xhr.onload = function() {
-            const response = JSON.parse(xhr.responseText);
-            console.log(response.code);
-            if (xhr.status === 200) {
-              alert('上传成功！\n服务端给出的响应：' + response.message);
-            } else {
-              alert('上传失败：' + xhr.responseText);
-            }
-          };
-        xhr.send(formData);
-      });
-  }
-  reader.readAsDataURL(imageElement.raw);
-},*/
-//这个是ChatGPT更改之后的结果
-submitUpload() {
+/*submitUpload() {
       if (this.fileList.length === 0) {
         this.$message.error('Please select a file first!');
         return;
@@ -237,7 +215,6 @@ submitUpload() {
       const xhr = new XMLHttpRequest();
       const url = 'http://127.0.0.1:8000/upload/'; // 确认URL正确
       xhr.open('POST', url, true);
-
       // 添加错误处理
       xhr.onerror = function() {
         console.error('Request error');
@@ -256,7 +233,47 @@ submitUpload() {
       console.log('Uploading to:', url);
       console.log('FormData:', formData);
       xhr.send(formData);
-    },
+    },*/
+    submitUpload() {
+    if (this.fileList.length === 0) {
+      this.$message.error('Please select a file first!');
+      return;
+    }
+
+    const rid = this.rid;
+    if (!rid) {
+      this.$message.error('Please enter the rid!');
+      return;
+    }
+
+    const file = this.fileList[0].raw;
+    const formData = new FormData();
+    formData.append('picture', file, file.name);
+    formData.append('rid', rid);
+
+    const xhr = new XMLHttpRequest();
+    const url = 'http://127.0.0.1:8000/upload/';
+    xhr.open('POST', url, true);
+
+    xhr.onerror = function() {
+      console.error('Request error');
+    };
+
+    xhr.onload = () => {
+      let response = JSON.parse(xhr.responseText);
+      console.log(response.code);
+      if (xhr.status === 200) {
+        this.serverResponse = '上传成功！\n服务端给出结果是：' + response.result;
+      } else {
+        this.serverResponse = '上传失败！\n服务端答道：' + response.msg;
+      }
+    };
+
+    console.log('Uploading to:', url);
+    console.log('FormData:', formData);
+    xhr.send(formData);
+  }
+},
 
     snapPhoto() {
       const video = this.$refs.video;
@@ -357,7 +374,6 @@ submitUpload() {
       // 清除定时器
       clearInterval(this.timer);
     }
-  },
 };
 </script>
 
@@ -483,5 +499,11 @@ p {
   .hidden {
   display: none;
   }
-
+  .output-box {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  background-color: #f8ecd1;
+}
 </style>
