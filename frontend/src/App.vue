@@ -272,8 +272,7 @@ export default {
     console.log('Uploading to:', url);
     console.log('FormData:', formData);
     xhr.send(formData);
-  }
-},
+    },
 
     snapPhoto() {
       const video = this.$refs.video;
@@ -374,6 +373,7 @@ export default {
       // 清除定时器
       clearInterval(this.timer);
     }
+  },
 };
 </script>
 
