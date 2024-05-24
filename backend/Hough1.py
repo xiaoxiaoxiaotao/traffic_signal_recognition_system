@@ -1,12 +1,12 @@
 import cv2
 import numpy as np
 
-# 基于lzr的gtsrb改，增加了层数和深度。
 
 def test_show(img, name="output"):
     cv2.imshow(name, img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
 
 # 检查椭圆
 def tuoyuan(img):
@@ -116,6 +116,7 @@ def hough(image):
                 results.append(image[top:bottom, left:right])
 
     return results
+
 
 '''
 # Test

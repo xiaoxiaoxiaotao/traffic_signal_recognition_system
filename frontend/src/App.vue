@@ -263,9 +263,9 @@ export default {
       let response = JSON.parse(xhr.responseText);
       console.log(response.code);
       if (xhr.status === 200) {
-        this.serverResponse = '上传成功！\n服务端给出结果是：' + response.result;
+        this.serverResponse = 'Success！\nReturn：' + response.result;
       } else {
-        this.serverResponse = '上传失败！\n服务端答道：' + response.msg;
+        this.serverResponse = 'Fail！\nMassage：' + response.msg;
       }
     };
 

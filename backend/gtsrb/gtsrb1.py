@@ -9,6 +9,8 @@ import time
 import os
 
 
+# 基于lzr的gtsrb改，增加了层数和深度。
+
 # 搭建神经网络
 # print(train_data.size)
 class Lzr(nn.Module):
