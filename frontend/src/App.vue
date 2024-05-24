@@ -59,7 +59,7 @@
         >
 
           <el-button slot="trigger" size="large" type="primary">Please click here to pick the picture.</el-button>
-          <el-button style="margin-left: 10px;" size="large" type="success" @click="submitUpload">Upload</el-button>
+          <el-button style="margin-left: 10px;" size="large" type="success" @click="PhotoUpload">Upload</el-button>
            <!--
           <el-button style="margin-left: 10px;" size="large" type="success" @click="test">test</el-button>
           -->
@@ -195,46 +195,7 @@ export default {
       };
       reader.readAsDataURL(file);
     },
-/*submitUpload() {
-      if (this.fileList.length === 0) {
-        this.$message.error('Please select a file first!');
-        return;
-      }
-
-      const rid = this.rid; // 获取用户输入的rid
-      if (!rid) {
-        this.$message.error('Please enter the rid!');
-        return;
-      }
-
-      const file = this.fileList[0].raw; // 获取原始文件
-      const formData = new FormData();
-      formData.append('picture', file, file.name);
-      formData.append('rid', rid); // 将rid添加到formData中
-
-      const xhr = new XMLHttpRequest();
-      const url = 'http://127.0.0.1:8000/upload/'; // 确认URL正确
-      xhr.open('POST', url, true);
-      // 添加错误处理
-      xhr.onerror = function() {
-        console.error('Request error');
-      };
-
-      xhr.onload = function() {
-        let response = JSON.parse(xhr.responseText);
-        console.log(response.code);
-        if (xhr.status === 200) {
-            alert('上传成功！\n服务端给出结果是：' + response.result);
-        } else {
-            alert('上传失败！\n服务端答道：' + response.msg);
-        }
-      };
-
-      console.log('Uploading to:', url);
-      console.log('FormData:', formData);
-      xhr.send(formData);
-    },*/
-    submitUpload() {
+    PhotoUpload() {
     if (this.fileList.length === 0) {
       this.$message.error('Please select a file first!');
       return;
@@ -246,32 +207,38 @@ export default {
       return;
     }
 
-    const file = this.fileList[0].raw;
-    const formData = new FormData();
-    formData.append('picture', file, file.name);
-    formData.append('rid', rid);
+    const file = this.fileList[this.fileList.length - 1].raw;
+    this.submitBlob(file, rid);
+    },
 
-    const xhr = new XMLHttpRequest();
-    const url = 'http://127.0.0.1:8000/upload/';
-    xhr.open('POST', url, true);
+    submitBlob(file, rid) {
+      const formData = new FormData();
+      formData.append('picture', file, file.name);
+      formData.append('rid', rid);
 
-    xhr.onerror = function() {
-      console.error('Request error');
-    };
+      const xhr = new XMLHttpRequest();
+      const url = 'http://127.0.0.1:8000/upload/';
+      xhr.open('POST', url, true);
 
-    xhr.onload = () => {
-      let response = JSON.parse(xhr.responseText);
-      console.log(response.code);
-      if (xhr.status === 200) {
-        this.serverResponse = '上传成功！\n服务端给出结果是：' + response.result;
-      } else {
-        this.serverResponse = '上传失败！\n服务端答道：' + response.msg;
-      }
-    };
+      xhr.onerror = function() {
+        console.error('Request error');
+      };
 
-    console.log('Uploading to:', url);
-    console.log('FormData:', formData);
-    xhr.send(formData);
+      xhr.onload = () => {
+        let response = JSON.parse(xhr.responseText);
+        console.log(response.code);
+        if (xhr.status === 200) {
+          const result = JSON.parse(response.result);
+          console.log(Object.keys(result))
+          this.serverResponse = 'Shangchuan chenggong！\nFuwuqi geichu de jieguo shi：' + JSON.parse(result.result0).max_result;
+        } else {
+          this.serverResponse = 'Shangchuan shibai！\nFuwuqi fanhui：' + response.msg;
+        }
+      };
+
+      console.log('Uploading to:', url);
+      console.log('FormData:', formData);
+      xhr.send(formData);
     },
 
     snapPhoto() {
@@ -354,7 +321,8 @@ export default {
             const canvas = this.$refs.canvas;
             const dataURL = canvas.toDataURL('image/jpeg');
             const blob = this.dataURLtoBlob(dataURL);
-            this.uploadPicture(blob);
+            this.submitBlob(blob, 1919810);
+
           }, 500);
         })
         .catch((error) => {
