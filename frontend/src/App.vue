@@ -235,29 +235,29 @@ export default {
       xhr.send(formData);
     },*/
     submitUpload() {
-    if (this.fileList.length === 0) {
-      this.$message.error('Please select a file first!');
-      return;
-    }
+  if (this.fileList.length === 0) {
+    this.$message.error('Please select a file first!');
+    return;
+  }
 
-    const rid = this.rid;
-    if (!rid) {
-      this.$message.error('Please enter the rid!');
-      return;
-    }
+  const rid = this.rid;
+  if (!rid) {
+    this.$message.error('Please enter the rid!');
+    return;
+  }
 
-    const file = this.fileList[0].raw;
-    const formData = new FormData();
-    formData.append('picture', file, file.name);
-    formData.append('rid', rid);
+  const file = this.fileList[0].raw;
+  const formData = new FormData();
+  formData.append('picture', file, file.name);
+  formData.append('rid', rid);
 
-    const xhr = new XMLHttpRequest();
-    const url = 'http://127.0.0.1:8000/upload/';
-    xhr.open('POST', url, true);
+  const xhr = new XMLHttpRequest();
+  const url = 'http://127.0.0.1:8000/upload/';
+  xhr.open('POST', url, true);
 
-    xhr.onerror = function() {
-      console.error('Request error');
-    };
+  xhr.onerror = function() {
+    console.error('Request error');
+  };
 
     xhr.onload = () => {
       let response = JSON.parse(xhr.responseText);
@@ -269,10 +269,30 @@ export default {
       }
     };
 
-    console.log('Uploading to:', url);
-    console.log('FormData:', formData);
-    xhr.send(formData);
+  console.log('Uploading to:', url);
+  console.log('FormData:', formData);
+  xhr.send(formData);
+},
+
+
+    fetchData() {
+      fetch(`http://127.0.0.1:8000/get_result?rid=${this.rid}`)
+        .then(response => response.json())
+        .then(data => {
+          this.serverResponse = data.max_result;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
     },
+    startFetching() {
+      this.timer = setInterval(this.fetchData, 500); // 每0.5秒获取一次数据
+    },
+    stopFetching() {
+      clearInterval(this.timer);
+      this.timer = null;
+    },
+
 
     snapPhoto() {
       const video = this.$refs.video;
@@ -374,6 +394,12 @@ export default {
       clearInterval(this.timer);
     }
   },
+  mounted() {
+    this.startFetching(); // 组件挂载时开始获取数据
+  },
+  beforeDestroy() {
+    this.stopFetching(); // 组件销毁前停止获取数据
+  }
 };
 </script>
 
